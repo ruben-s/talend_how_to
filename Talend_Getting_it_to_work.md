@@ -57,11 +57,11 @@ You can also install and open gnome-color-chooser: Go to Specific > Tooltips and
 
 ### Open Issue
 
-- Find out how to make logging of ETL go to different databases when moving from development/uat/production.
+- Find out how to make logging of ETL go to different databases when moving from development/uat/production.  
 Possible solution: define database name in connections as a java environment parameter.
 This could then be retreived by System.getenv().get("LOG_DB").
-=> Not possible if done through the Metadata defined connections as all parameters in the database connection definition are put between double qoutes.
-   - Do this by using System.getEnv("") directly in the connection properties for Stats&Logs of the project properties.
+    - => Not possible if done through the Metadata defined connections as all parameters in the database connection definition are put between double qoutes.
+    - Instead: do this using System.getEnv("") directly in the connection properties for Stats&Logs of the project properties.
    
 Also see following [link](http://www.etladvisors.com/2012/08/22/managing-multiple-db-env/).
 
@@ -70,7 +70,10 @@ Promoting ETL Jobs to SpagoBi server
 
 ### CAS Proxy
 
-The authentication on SpagoBI makes use of the [Company] CAS server. However this is not supported by Talend. As such a proxy needs to be running on the Talend workstation that redirects Authentication.
+The authentication on SpagoBI makes use of the [Company] CAS server.  
+However this is not supported by Talend.  
+As such a proxy needs to be running on the Talend workstation that redirects Authentication.
+- https://github.com/ptillemans/casproxy
 
 This cas proxy listens on port 3000.
 It uses the credential to authenticate as defined in a casproxy.properties file.
@@ -78,10 +81,10 @@ It uses the credential to authenticate as defined in a casproxy.properties file.
 ### SpagoBi Server definition - CAS Proxy for Authentication
 
 SpagoBi servers need to be defined in Talend Preferences:
-Application Menu -> Window -> Preferences
-Talend -> Import/Export -> SpagoBi Server
+Application Menu -> Window -> Preferences -> Talend -> Import/Export -> SpagoBi Server
 
-The only parameter that needs to be defined in the SpagoBi Servers is host & port => localhost, port 3000, the authentication is done through the CAS Proxy.
+The only parameter that needs to be defined in the SpagoBi Servers is host & port  
+=> localhost, port 3000, the authentication is done through the CAS Proxy.
 
 ### Deploy on SpagoBi
 
@@ -112,11 +115,18 @@ Select where in the tree the XML document should be added (this determines where
 - using sequences: Numeric.sequence("s1",((max_quoted_price_dwh_id.quoted_prices_dwh_id==null)?0:max_quoted_price_dwh_id.quoted_prices_dwh_id) +1, 1) 
     - when the target table is empty and performing a join between staging and target to identify new records for inserts,  
     then max_xxx_dwh_id is null as the target table is still empty. In that case the null needs to be converted to 0 to prevent a java.lang.nullpointer
+- to differentiate between inserts and updates on target:
+    - create a join between staging and target with tMap
+    - configure tMap for inner join
+    - configure 1 output for inner join rejects -> inserts (i.e. no equivalent record on target yet)
+        - use tAggregate component to retrieve the max value of integer surrogate primary key 
+        - use sequence to create new integer surrogate primary keys
 
 ### RE-usable context job
-- to enable each job to load the context for the job easily [download re-usable context job from TalendForge](http://www.talendbyexample.com/talend-reusable-context-load-job.html)
+- to enable each job to load the context for a job EXPLICITLY easily [download re-usable context job from TalendForge](http://www.talendbyexample.com/talend-reusable-context-load-job.html)
     - check-out following [page](http://www.talendbyexample.com/talend-load-context-example.html)
-    
+- alternative configure implicit context loading in project properties
+
 ### Altering the default mapping between Talend and DB
 
 - schema import from oracle database incorrectly translates oracle number datatype to BigDecimal with 0 precision.
