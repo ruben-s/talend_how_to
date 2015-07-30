@@ -121,6 +121,21 @@ Select where in the tree the XML document should be added (this determines where
     - configure 1 output for inner join rejects -> inserts (i.e. no equivalent record on target yet)
         - use tAggregate component to retrieve the max value of integer surrogate primary key 
         - use sequence to create new integer surrogate primary keys
+- to update a tMap when altering a table (adding column, changing type, ...)
+    - after altering the table -> edit schema in metadata
+    - for an t[DB]Input component
+        - set the schema to "Repository" and select appropriate table
+        - verify through "Edit Schema -> View Schema" that all columns are indicated as "used"
+        - execute a "Guess Schema"
+        - when opening a connected tMap the new/altered columns should be present/updated
+    - for a t[DB]Output component
+        - set the schema to "Repository" and select appropriate table
+        - Use "Edit Schema -> View Schema" to see input (i.e. output from tMap) and output (i.e. to the database)
+            - transfer the schema information from output to input by means of the double arrow from right to left
+
+### logging of ETL jobs
+- the id of a job:     this.pid, this.fatherPid, this.rootPid
+    - https://www.talendforge.org/forum/viewtopic.php?id=23807
 
 ### RE-usable context job
 - to enable each job to load the context for a job EXPLICITLY easily [download re-usable context job from TalendForge](http://www.talendbyexample.com/talend-reusable-context-load-job.html)
